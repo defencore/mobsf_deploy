@@ -1,0 +1,103 @@
+--- /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/views/api/api_static_analysis.py	2024-10-10 16:59:56.341133953 +0300
++++ /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/views/api/api_static_analysis.py	2024-10-10 17:23:08.329836261 +0300
+@@ -15,7 +15,11 @@
+ from mobsf.MobSF.views.home import RecentScans, Upload, delete_scan
+ from mobsf.MobSF.views.api.api_middleware import make_api_response
+ from mobsf.StaticAnalyzer.views.android.views import view_source
+-from mobsf.StaticAnalyzer.views.android.static_analyzer import static_analyzer
++from mobsf.StaticAnalyzer.views.android.static_analyzer import (
++    static_analyzer,
++    static_analyzer_apk_unpack,
++    static_analyzer_apk_analyze,
++)
+ from mobsf.StaticAnalyzer.views.ios.views import view_source as ios_view_source
+ from mobsf.StaticAnalyzer.views.ios.static_analyzer import static_analyzer_ios
+ from mobsf.StaticAnalyzer.views.common.shared_func import compare_apps
+@@ -307,3 +311,87 @@
+     else:
+         response = make_api_response(resp, 200)
+     return response
++
++
++@request_method(['POST'])
++@csrf_exempt
++def api_apk_unpack(request):
++    """POST - Scan API."""
++    if 'hash' not in request.POST:
++        return make_api_response(
++            {'error': 'Missing Parameters'}, 422)
++    checksum = request.POST['hash']
++    if not is_md5(checksum):
++        return make_api_response(
++            {'error': 'Invalid Checksum'}, 500)
++    robj = RecentScansDB.objects.filter(MD5=checksum)
++    if not robj.exists():
++        return make_api_response(
++            {'error': 'The file is not uploaded/available'}, 500)
++    scan_type = robj[0].SCAN_TYPE
++    # APK, Source Code (Android/iOS) ZIP, SO, JAR, AAR
++    if scan_type in settings.ANDROID_EXTS:
++        resp = static_analyzer_apk_unpack(request, checksum, True)
++        if 'type' in resp:
++            resp = static_analyzer_ios(request, checksum, True)
++        if 'error' in resp:
++            response = make_api_response(resp, 500)
++        else:
++            response = make_api_response(resp, 200)
++    # IPA
++    elif scan_type in settings.IOS_EXTS:
++        resp = static_analyzer_ios(request, checksum, True)
++        if 'error' in resp:
++            response = make_api_response(resp, 500)
++        else:
++            response = make_api_response(resp, 200)
++    # APPX
++    elif scan_type in settings.WINDOWS_EXTS:
++        resp = windows.staticanalyzer_windows(request, checksum, True)
++        if 'error' in resp:
++            response = make_api_response(resp, 500)
++        else:
++            response = make_api_response(resp, 200)
++    return response
++
++
++@request_method(['POST'])
++@csrf_exempt
++def api_apk_analyze(request):
++    """POST - Scan API."""
++    if 'hash' not in request.POST:
++        return make_api_response(
++            {'error': 'Missing Parameters'}, 422)
++    checksum = request.POST['hash']
++    if not is_md5(checksum):
++        return make_api_response(
++            {'error': 'Invalid Checksum'}, 500)
++    robj = RecentScansDB.objects.filter(MD5=checksum)
++    if not robj.exists():
++        return make_api_response(
++            {'error': 'The file is not uploaded/available'}, 500)
++    scan_type = robj[0].SCAN_TYPE
++    # APK, Source Code (Android/iOS) ZIP, SO, JAR, AAR
++    if scan_type in settings.ANDROID_EXTS:
++        resp = static_analyzer_apk_analyze(request, checksum, True)
++        if 'type' in resp:
++            resp = static_analyzer_ios(request, checksum, True)
++        if 'error' in resp:
++            response = make_api_response(resp, 500)
++        else:
++            response = make_api_response(resp, 200)
++    # IPA
++    elif scan_type in settings.IOS_EXTS:
++        resp = static_analyzer_ios(request, checksum, True)
++        if 'error' in resp:
++            response = make_api_response(resp, 500)
++        else:
++            response = make_api_response(resp, 200)
++    # APPX
++    elif scan_type in settings.WINDOWS_EXTS:
++        resp = windows.staticanalyzer_windows(request, checksum, True)
++        if 'error' in resp:
++            response = make_api_response(resp, 500)
++        else:
++            response = make_api_response(resp, 200)
++    return response

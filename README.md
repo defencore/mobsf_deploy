@@ -1,2 +1,5 @@
 # mobsf_deploy
-# mobsf_deploy
+
+```
+./init_script.sh
+```
