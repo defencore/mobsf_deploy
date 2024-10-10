@@ -42,7 +42,12 @@ sudo curl -L "https://github.com/docker/compose/releases/download/v${COMPOSE_VER
 sudo chmod +x /usr/local/bin/docker-compose
 docker-compose --version
 
+mkdir ./tools
+cp -r /opt/jadx ./tools/jadx
+cp -r /usr/local/bin/apktool.jar ./tools/apktool.jar
+
 sudo docker build -f Dockerfile -t mobsf_a .
+sudo docker run -it -p 8000:8000 -v ./_output/:/root/.MobSF/uploads/ mobsf_a
 
 # HowTo
 # - https://www.digitalocean.com/community/tutorials/how-to-install-and-use-docker-compose-on-ubuntu-20-04

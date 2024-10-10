@@ -64,12 +64,13 @@ RUN mkdir -p /home/mobsf && cd /home/mobsf \
 
 # Update MobSF tools and apply patches
 RUN rm -rf /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/jadx
-COPY /opt/jadx /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/jadx
+COPY ./tools/jadx /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/jadx
 RUN sed -i "s/apktool_2.9.3.jar/apktool.jar/" /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/views/android/manifest_utils.py
-COPY /usr/local/bin/apktool.jar /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/apktool.jar
-RUN patch /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/views/android/static_analyzer.py < ./patches/static_analyzer.patch
-RUN patch /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/views/api/api_static_analysis.py < ./patches/api_static_analysis.patch
-RUN patch /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/urls.py < ./patches/urls.patch
+COPY ./tools/apktool.jar /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/apktool.jar
+COPY ./patches /tmp/patches
+RUN patch /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/views/android/static_analyzer.py < /tmp/patches/static_analyzer.patch
+RUN patch /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/views/api/api_static_analysis.py < /tmp/patches/api_static_analysis.patch
+RUN patch /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/urls.py < /tmp/patches/urls.patch
 
 # Set JAVA_HOME
 ENV JAVA_HOME=/home/mobsf/Mobile-Security-Framework-MobSF/jdk-20.0.2/
