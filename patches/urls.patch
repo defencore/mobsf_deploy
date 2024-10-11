@@ -1,11 +1,12 @@
 --- /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/urls.py	2024-10-10 16:51:31.816794516 +0300
 +++ /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/urls.py	2024-10-10 17:04:18.995823223 +0300
-@@ -85,6 +85,8 @@
+@@ -85,6 +85,9 @@
      # Static Analysis
      re_path(r'^api/v1/upload$', api_sz.api_upload),
      re_path(r'^api/v1/scan$', api_sz.api_scan),
 +    re_path(r'^api/v1/apk/unpack$', api_sz.api_apk_unpack),
 +    re_path(r'^api/v1/apk/analyze$', api_sz.api_apk_analyze),
++    re_path(r'^api/v1/apk/list$', api_sz.api_apk_list),
      re_path(r'^api/v1/scan_logs$', api_sz.api_scan_logs),
      re_path(r'^api/v1/delete_scan$', api_sz.api_delete_scan),
      re_path(r'^api/v1/download_pdf$', api_sz.api_pdf_report),

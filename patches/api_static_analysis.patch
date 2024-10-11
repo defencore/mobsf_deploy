@@ -1,6 +1,14 @@
---- /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/views/api/api_static_analysis.py	2024-10-10 16:59:56.341133953 +0300
-+++ /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/views/api/api_static_analysis.py	2024-10-10 17:23:08.329836261 +0300
-@@ -15,7 +15,11 @@
+--- /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/views/api/api_static_analysis.py	2024-10-11 16:42:05.437174037 +0300
++++ /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/views/api/api_static_analysis.py	2024-10-11 16:43:49.713411001 +0300
+@@ -6,6 +6,7 @@
+ 
+ from mobsf.StaticAnalyzer.models import (
+     RecentScansDB,
++    StaticAnalyzerAndroid,
+ )
+ from mobsf.MobSF.utils import (
+     get_scan_logs,
+@@ -15,7 +16,11 @@
  from mobsf.MobSF.views.home import RecentScans, Upload, delete_scan
  from mobsf.MobSF.views.api.api_middleware import make_api_response
  from mobsf.StaticAnalyzer.views.android.views import view_source
@@ -13,7 +21,7 @@
  from mobsf.StaticAnalyzer.views.ios.views import view_source as ios_view_source
  from mobsf.StaticAnalyzer.views.ios.static_analyzer import static_analyzer_ios
  from mobsf.StaticAnalyzer.views.common.shared_func import compare_apps
-@@ -307,3 +311,87 @@
+@@ -307,3 +312,120 @@
      else:
          response = make_api_response(resp, 200)
      return response
@@ -101,3 +109,36 @@
 +        else:
 +            response = make_api_response(resp, 200)
 +    return response
++
++
++@request_method(['GET'])
++@csrf_exempt
++def api_apk_list(request):
++    """GET - Get list of uploaded APK hashes, file names, and package names."""
++    try:
++        # Retrieve all scan records for APKs
++        result = RecentScansDB.objects.filter(SCAN_TYPE__in=settings.ANDROID_EXTS).values('MD5', 'FILE_NAME').order_by('-TIMESTAMP')
++        
++        # Extract MD5 hashes to look up package information
++        md5_list = [entry['MD5'] for entry in result]
++        
++        # Get corresponding entries from StaticAnalyzerAndroid for package names
++        android_scans = StaticAnalyzerAndroid.objects.filter(MD5__in=md5_list).values('MD5', 'PACKAGE_NAME')
++        
++        # Create a mapping of MD5 to package_name
++        package_mapping = {scan['MD5']: scan['PACKAGE_NAME'] for scan in android_scans}
++
++        # Create a list of MD5 hashes, file names, and package names
++        apk_list = [{"hash": entry['MD5'], 
++                     "file": entry['FILE_NAME'], 
++                     "package_name": package_mapping.get(entry['MD5'], 'Base')} 
++                    for entry in result]
++        
++        data = {
++            'apk_list': apk_list,
++            'count': len(apk_list),
++        }
++        return make_api_response(data, 200)
++    except Exception as e:
++        # Return error response if something goes wrong
++        return make_api_response({'error': str(e)}, 500)

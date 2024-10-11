@@ -63,3 +63,12 @@ docker rm $(docker ps -a -q)
 # Remove all Docker images
 docker rmi $(docker images -q)
 ```
+
+# Changes
+```
+curl --url http://127.0.0.1:8000/api/v1/apk/list -H "Authorization: e72372a4d5b01c31d6ef57c4ae738a9251726e025088d13f4ef441fb8bc9ea37"
+```
+
+```
+{"apk_list": [{"hash": "bb1d34f21a4e65e76186206d9ef92a9a", "file": "com.android.chrome@129.0.6668.81.zip", "package_name": "Unknown"}], "count": 1}%
+```
