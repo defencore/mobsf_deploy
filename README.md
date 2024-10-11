@@ -62,9 +62,15 @@ docker rm $(docker ps -a -q)
 
 # Remove all Docker images
 docker rmi $(docker images -q)
+
+docker builder prune
 ```
 
 # Changes
+## API
+### /api/v1/apk/unpack
+### /api/v1/apk/analyze
+### /api/v1/apk/list
 ```
 curl --url http://127.0.0.1:8000/api/v1/apk/list -H "Authorization: e72372a4d5b01c31d6ef57c4ae738a9251726e025088d13f4ef441fb8bc9ea37"
 ```

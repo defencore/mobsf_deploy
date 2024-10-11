@@ -70,14 +70,25 @@ RUN mkdir -p /home/mobsf && cd /home/mobsf \
     && ./install_java_wkhtmltopdf.sh 
 
 # Update MobSF tools and apply patches
+# APKTOOL latest version
+RUN APKTOOL_URL=$(curl -s https://bitbucket.org/iBotPeaches/apktool/downloads/  | grep -oP 'href="\K(.*?apktool_[^"]*\.jar)' | head -n 1) \
+    && curl -Lo /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/apktool.jar https://bitbucket.org$APKTOOL_URL \
+    && chmod +r /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/apktool.jar
+
+# JADX - Dex to Java Decompiler 
+RUN JADX_VERSION=$(curl -s "https://api.github.com/repos/skylot/jadx/releases/latest" | grep -Po '"tag_name": "v\K[0-9.]+') \
+    && curl -Lo jadx.zip "https://github.com/skylot/jadx/releases/latest/download/jadx-${JADX_VERSION}.zip" \
+    && unzip jadx.zip -d jadx \
+    && mv jadx /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/jadx \
+    && rm -rf jadx.zip
+
+# Apply patches
 COPY ./patches /tmp/patches
-RUN rm -rf /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/jadx && \
-    sed -i "s/apktool_2.9.3.jar/apktool.jar/" /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/views/android/manifest_utils.py && \
+RUN sed -i "s/apktool_2.9.3.jar/apktool.jar/" /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/views/android/manifest_utils.py && \
     patch --binary /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/views/android/static_analyzer.py < /tmp/patches/static_analyzer.patch && \
     patch --binary /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/views/api/api_static_analysis.py < /tmp/patches/api_static_analysis.patch && \
     patch --binary /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/MobSF/urls.py < /tmp/patches/urls.patch
-COPY ./tools/jadx /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/jadx
-COPY ./tools/apktool.jar /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/tools/apktool.jar
+
     
 # Set JAVA_HOME
 ENV JAVA_HOME=/home/mobsf/Mobile-Security-Framework-MobSF/jdk-20.0.2/

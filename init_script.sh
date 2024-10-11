@@ -77,11 +77,6 @@ sudo chmod +x /usr/local/bin/docker-compose
 # Verify the installed Docker Compose version
 docker-compose --version
 
-# Create a directory for tools and copy JADX and APKTOOL files into it
-mkdir ./tools
-cp -r /opt/jadx ./tools/jadx
-cp -r /usr/local/bin/apktool.jar ./tools/apktool.jar
-
 # Add the current user to the Docker group to allow Docker commands without sudo
 sudo usermod -aG docker ubuntu
 
