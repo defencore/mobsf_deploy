@@ -1,5 +1,5 @@
---- static_analyzer.py	2024-10-10 16:49:38.606995190 +0300
-+++ ../static_analyzer.py	2024-10-10 17:33:52.442201239 +0300
+--- /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/views/android/static_analyzer.py	2024-10-10 16:49:38.606995190 +0300
++++ /home/mobsf/Mobile-Security-Framework-MobSF/mobsf/StaticAnalyzer/views/android/static_analyzer.py	2024-10-10 17:33:52.442201239 +0300
 @@ -613,3 +613,400 @@
          full_path = os.path.join(inside, x)
          shutil.move(full_path, app_dir)
