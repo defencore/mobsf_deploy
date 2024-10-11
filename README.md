@@ -1,6 +1,8 @@
 # mobsf_deploy
 
-```
+## Clone the Repository
+
+```bash
 # Clone the MobSF deployment repository from GitHub
 git clone https://github.com/defencore/mobsf_deploy
 
@@ -11,15 +13,27 @@ cd mobsf_deploy
 ./init_script.sh
 ```
 
+## Build MobSF Container
+
+```bash
+# Build MobSF container
+docker build -f Dockerfile -t mobsf_a .
 ```
+
+## Run MobSF in Docker
+
+```bash
 # Run MobSF in a Docker container named "MobSF_A" and expose it on port 8000
 # The _output/ folder is mounted to /root/.MobSF/uploads/ for access to scans
 docker run --name "MobSF_A" -it -p 8000:8000 -v ./_output/:/root/.MobSF/uploads/ mobsf_a
+
 # Use CTRL+C after the MobSF server boots up to stop it
 # This will gracefully stop the container after initialization
 ```
 
-```
+## Start and Stop the MobSF Container
+
+```bash
 # Start the "MobSF_A" container in interactive mode (resumes from where it was stopped)
 docker start -i "MobSF_A"
 
@@ -27,7 +41,9 @@ docker start -i "MobSF_A"
 docker stop -i "MobSF_A"
 ```
 
-```
+## Manage Docker Containers and Images
+
+```bash
 # List all containers, both running and stopped
 docker ps -a
 
@@ -35,7 +51,9 @@ docker ps -a
 docker images
 ```
 
-```
+## Stop and Remove Containers and Images
+
+```bash
 # Stop all running containers
 docker stop $(docker ps -q)
 
